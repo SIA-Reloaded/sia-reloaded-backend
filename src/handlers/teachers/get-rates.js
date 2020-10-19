@@ -14,21 +14,29 @@ exports.getRatesHandler = async (event) => {
     if (event.httpMethod !== 'GET') {
         throw new Error(`getAllItems only accept GET method, you tried: ${event.httpMethod}`);
     }
+
     // All log statements are written to CloudWatch
     console.info('received:', event);
-
+    const queryParameters = event.queryStringParameters
+    console.info(queryParameters.semester)
     // get all items from the table (only first 1MB data, you can use `LastEvaluatedKey` to get the rest of data)
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#scan-property
     // https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Scan.html
-    var params = {
-        TableName : tableName
+    const params = {
+        TableName: tableName,
+        Key: {
+            "teacherID": queryParameters.teacherID,
+            "semester": queryParameters.semester
+        }
     };
-    const data = await docClient.scan(params).promise();
-    const items = data.Items;
+    console.info(params)
+    const data = await docClient.get(params).promise();
+    console.info(data)
+    const item = data.Item;
 
     const response = {
         statusCode: 200,
-        body: JSON.stringify(items)
+        body: JSON.stringify(item)
     };
 
     // All log statements are written to CloudWatch

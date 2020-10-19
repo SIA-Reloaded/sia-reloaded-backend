@@ -39,7 +39,7 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /
+            Path: /teachers/getRates
             Method: GET
 
   # Fin Evaluacion Docente Lambdas
@@ -133,6 +133,13 @@ Resources:
   #       WriteCapacityUnits: 2
 
 Outputs:
-  WebEndpoint:
-    Description: "API Gateway endpoint URL for Prod stage"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+  
+  getRatesApi:
+    Description: "API Gateway endpoint URL for Prod stage for getRates function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getRates"
+  getRates:
+    Description: "getRates Lambda Function ARN"
+    Value: !GetAtt getRates.Arn
+  getRatesFunctionIamRole:
+    Description: "Implicit IAM Role created for getRates function"
+    Value: !GetAtt getRates.Arn

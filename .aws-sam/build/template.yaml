@@ -22,11 +22,23 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /
+            Path: /teachers/getRates
             Method: GET
       CodeUri: getRates
 Outputs:
-  WebEndpoint:
-    Description: API Gateway endpoint URL for Prod stage
+  getRatesApi:
+    Description: API Gateway endpoint URL for Prod stage for getRates function
     Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getRates
+  getRates:
+    Description: getRates Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - getRates
+      - Arn
+  getRatesFunctionIamRole:
+    Description: Implicit IAM Role created for getRates function
+    Value:
+      Fn::GetAtt:
+      - getRates
+      - Arn
