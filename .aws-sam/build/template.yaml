@@ -3,10 +3,10 @@ Description: suia-stack
 Transform:
 - AWS::Serverless-2016-10-31
 Resources:
-  getEvaluacionDocente:
+  getRates:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/evaluacion-docente/get-evaluacion-docente.getEvaluacionDocenteHandler
+      Handler: src/handlers/teachers/get-rates.getRatesHandler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
@@ -14,17 +14,17 @@ Resources:
         table.
       Policies:
       - DynamoDBCrudPolicy:
-          TableName: ProfessorData
+          TableName: TeacherRate
       Environment:
         Variables:
-          TABLE: ProfessorData
+          TABLE: TeacherRate
       Events:
         Api:
           Type: Api
           Properties:
             Path: /
             Method: GET
-      CodeUri: getEvaluacionDocente
+      CodeUri: getRates
 Outputs:
   WebEndpoint:
     Description: API Gateway endpoint URL for Prod stage

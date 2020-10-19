@@ -19,10 +19,10 @@ Resources:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
   # Evaluacion Docente Lambdas
 
-  getEvaluacionDocente:
+  getRates:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/evaluacion-docente/get-evaluacion-docente.getEvaluacionDocenteHandler
+      Handler: src/handlers/teachers/get-rates.getRatesHandler
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
@@ -30,11 +30,11 @@ Resources:
       Policies:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
         - DynamoDBCrudPolicy:
-            TableName: ProfessorData
+            TableName: TeacherRate
       Environment:
         Variables:
           # Make table name accessible as environment variable from function code during execution
-          TABLE: ProfessorData
+          TABLE: TeacherRate
       Events:
         Api:
           Type: Api
