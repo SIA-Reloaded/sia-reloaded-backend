@@ -64,6 +64,29 @@ Resources:
             Path: /teachers/getCourses
             Method: GET
 
+  getCourse:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-course.getCourseHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets one teacher evaluation with a HTTP get method from a DynamoDB table.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: CourseGroup
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: CourseGroup
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getCourses/{courseID}
+            Method: GET 
+
   # Fin Evaluacion Docente Lambdas
   # This is a Lambda function config associated with the source code: get-all-items.js
   # getAllItemsFunction:
@@ -175,3 +198,13 @@ Outputs:
   getCoursesFunctionIamRole:
     Description: "Implicit IAM Role created for getCourses function"
     Value: !GetAtt getCourses.Arn
+
+  getCourseApi:
+    Description: "API Gateway endpoint URL for Prod stage for getCourse function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getCourses/{courseID}"
+  getCourse:
+    Description: "getCourse Lambda Function ARN"
+    Value: !GetAtt getCourse.Arn
+  getCourseFunctionIamRole:
+    Description: "Implicit IAM Role created for getCourse function"
+    Value: !GetAtt getCourse.Arn 
