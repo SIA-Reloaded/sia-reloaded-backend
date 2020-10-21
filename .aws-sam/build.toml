@@ -4,4 +4,4 @@
 [build_definitions.97e165c4-623d-42dc-819a-1bd7530fca99]
 codeuri = "."
 runtime = "nodejs12.x"
-functions = ["getRates"]
+functions = ["getRates", "getCourses"]

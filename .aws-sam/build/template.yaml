@@ -25,6 +25,28 @@ Resources:
             Path: /teachers/getRates
             Method: GET
       CodeUri: getRates
+  getCourses:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-courses.getCoursesHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets one teacher evaluation with a HTTP get method from a DynamoDB
+        table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: CourseGroup
+      Environment:
+        Variables:
+          TABLE: CourseGroup
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getCourses
+            Method: GET
+      CodeUri: getCourses
 Outputs:
   getRatesApi:
     Description: API Gateway endpoint URL for Prod stage for getRates function
@@ -41,4 +63,20 @@ Outputs:
     Value:
       Fn::GetAtt:
       - getRates
+      - Arn
+  getCoursesApi:
+    Description: API Gateway endpoint URL for Prod stage for getCourses function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getCourses
+  getCourses:
+    Description: getCourses Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - getCourses
+      - Arn
+  getCoursesFunctionIamRole:
+    Description: Implicit IAM Role created for getCourses function
+    Value:
+      Fn::GetAtt:
+      - getCourses
       - Arn
