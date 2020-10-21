@@ -66,7 +66,7 @@ Resources:
         Api:
           Type: Api
           Properties:
-            Path: /teachers/getCourses/{courseID}
+            Path: /teachers/getCourse
             Method: GET
       CodeUri: getCourse
 Outputs:
@@ -105,7 +105,7 @@ Outputs:
   getCourseApi:
     Description: API Gateway endpoint URL for Prod stage for getCourse function
     Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getCourses/{courseID}
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getCourse
   getCourse:
     Description: getCourse Lambda Function ARN
     Value:
