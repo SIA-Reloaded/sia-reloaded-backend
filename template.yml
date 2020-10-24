@@ -19,6 +19,29 @@ Resources:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
   # Evaluacion Docente Lambdas
 
+  getUserData:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/system/get-user-data.getByUserDataHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: pulls all the userdata from dynamoDB.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: UserData
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: UserData
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /system/getUserData/{username}
+            Method: GET
+
   getRates:
     Type: AWS::Serverless::Function
     Properties:
@@ -90,6 +113,16 @@ Resources:
   # Fin Evaluacion Docente Lambdas
   
 Outputs:
+
+  getUserDataApi:
+    Description: "API Gateway endpoint URL for Prod stage for getUserData function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/system/getUserData"
+  getUserData:
+    Description: "getUserData Lambda Function ARN"
+    Value: !GetAtt getUserData.Arn
+  getUserDataFunctionIamRole:
+    Description: "Implicit IAM Role created for getUserData function"
+    Value: !GetAtt getUserData.Arn
   
   getRatesApi:
     Description: "API Gateway endpoint URL for Prod stage for getRates function"
