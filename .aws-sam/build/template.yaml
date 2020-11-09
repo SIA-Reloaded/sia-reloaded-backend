@@ -1,0 +1,189 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: suia-stack
+Transform:
+- AWS::Serverless-2016-10-31
+Resources:
+  getUserData:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/system/get-user-data.getByUserDataHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: pulls all the userdata from dynamoDB.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: UserData
+      Environment:
+        Variables:
+          TABLE: UserData
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /system/getUserData/{username}
+            Method: GET
+      CodeUri: getUserData
+  getRates:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-rates.getRatesHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets one teacher evaluation with a HTTP get method from a DynamoDB
+        table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: TeacherRate
+      Environment:
+        Variables:
+          TABLE: TeacherRate
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getRates
+            Method: GET
+      CodeUri: getRates
+  getCourses:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-courses.getCoursesHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets one teacher evaluation with a HTTP get method from a DynamoDB
+        table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: CourseGroup
+      Environment:
+        Variables:
+          TABLE: CourseGroup
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getCourses
+            Method: GET
+      CodeUri: getCourses
+  getCourse:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-course.getCourseHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets one teacher evaluation with a HTTP get method from a DynamoDB
+        table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: CourseGroup
+      Environment:
+        Variables:
+          TABLE: CourseGroup
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getCourse
+            Method: GET
+      CodeUri: getCourse
+  getQuestions:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-questions.getQuestionsHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets the questions for evaluacion docente a HTTP get method from
+        a DynamoDB table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: RateQuestion
+      Environment:
+        Variables:
+          TABLE: RateQuestion
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getQuestions
+            Method: GET
+      CodeUri: getQuestions
+Outputs:
+  getUserDataApi:
+    Description: API Gateway endpoint URL for Prod stage for getUserData function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/system/getUserData
+  getUserData:
+    Description: getUserData Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - getUserData
+      - Arn
+  getUserDataFunctionIamRole:
+    Description: Implicit IAM Role created for getUserData function
+    Value:
+      Fn::GetAtt:
+      - getUserData
+      - Arn
+  getRatesApi:
+    Description: API Gateway endpoint URL for Prod stage for getRates function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getRates
+  getRates:
+    Description: getRates Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - getRates
+      - Arn
+  getRatesFunctionIamRole:
+    Description: Implicit IAM Role created for getRates function
+    Value:
+      Fn::GetAtt:
+      - getRates
+      - Arn
+  getCoursesApi:
+    Description: API Gateway endpoint URL for Prod stage for getCourses function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getCourses
+  getCourses:
+    Description: getCourses Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - getCourses
+      - Arn
+  getCoursesFunctionIamRole:
+    Description: Implicit IAM Role created for getCourses function
+    Value:
+      Fn::GetAtt:
+      - getCourses
+      - Arn
+  getCourseApi:
+    Description: API Gateway endpoint URL for Prod stage for getCourse function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getCourse
+  getCourse:
+    Description: getQuestions Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - getQuestions
+      - Arn
+  getCourseFunctionIamRole:
+    Description: Implicit IAM Role created for getCourse function
+    Value:
+      Fn::GetAtt:
+      - getCourse
+      - Arn
+  getQuestionsApi:
+    Description: API Gateway endpoint URL for Prod stage for getQuestions function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getQuestions
+  getQuestionsFunctionIamRole:
+    Description: Implicit IAM Role created for getQuestions function
+    Value:
+      Fn::GetAtt:
+      - getQuestions
+      - Arn
