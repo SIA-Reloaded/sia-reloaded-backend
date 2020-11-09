@@ -112,6 +112,28 @@ Resources:
             Path: /teachers/getQuestions
             Method: GET
       CodeUri: getQuestions
+  putTeacherRate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/put-teacherRate.putTeacherRateHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Put the rate for a teacher using HTTP post method to a DynamoDB
+        table.
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: TeacherRate
+      Environment:
+        Variables:
+          TABLE: TeacherRate
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/putTeacherRate
+            Method: POST
+      CodeUri: putTeacherRate
 Outputs:
   getUserDataApi:
     Description: API Gateway endpoint URL for Prod stage for getUserData function
@@ -166,10 +188,10 @@ Outputs:
     Value:
       Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getCourse
   getCourse:
-    Description: getQuestions Lambda Function ARN
+    Description: putTeacherRate Lambda Function ARN
     Value:
       Fn::GetAtt:
-      - getQuestions
+      - putTeacherRate
       - Arn
   getCourseFunctionIamRole:
     Description: Implicit IAM Role created for getCourse function
@@ -186,4 +208,14 @@ Outputs:
     Value:
       Fn::GetAtt:
       - getQuestions
+      - Arn
+  putTeacherRateApi:
+    Description: API Gateway endpoint URL for Prod stage for putTeacherRate function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/putTeacherRate
+  putTeacherRateFunctionIamRole:
+    Description: Implicit IAM Role created for putTeacherRate function
+    Value:
+      Fn::GetAtt:
+      - putTeacherRate
       - Arn

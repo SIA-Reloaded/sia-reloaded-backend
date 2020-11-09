@@ -16,8 +16,6 @@ exports.getQuestionsHandler = async (event) => {
 
     const data = await docClient.scan(params).promise();
 
-    console.log(data)
-
     const response = Utils.prepareResponse(data.Items);
 
     // All log statements are written to CloudWatch

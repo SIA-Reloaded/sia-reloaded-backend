@@ -25,6 +25,12 @@ exports.putTeacherRateHandler = async (event) => {
     }
 
 
+    // questionID	string
+    // body	string
+    // score	number
+    // value	number
+    // selectedOptions	[...]
+
     Object.keys(body).forEach(code => {
 
         if (code == "options") {
