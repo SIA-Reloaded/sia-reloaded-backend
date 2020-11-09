@@ -109,6 +109,29 @@ Resources:
           Properties:
             Path: /teachers/getCourse
             Method: GET 
+    
+  getQuestions:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-questions.getQuestionsHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets the questions for evaluacion docente a HTTP get method from a DynamoDB table.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: RateQuestion
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: RateQuestion
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getQuestions
+            Method: GET 
 
   # Fin Evaluacion Docente Lambdas
   
@@ -153,3 +176,13 @@ Outputs:
   getCourseFunctionIamRole:
     Description: "Implicit IAM Role created for getCourse function"
     Value: !GetAtt getCourse.Arn 
+
+  getQuestionsApi:
+    Description: "API Gateway endpoint URL for Prod stage for getQuestions function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getQuestions"
+  getCourse:
+    Description: "getQuestions Lambda Function ARN"
+    Value: !GetAtt getQuestions.Arn
+  getQuestionsFunctionIamRole:
+    Description: "Implicit IAM Role created for getQuestions function"
+    Value: !GetAtt getQuestions.Arn 
