@@ -11,4 +11,22 @@ const prepareResponse = (body, statusCode = 200, additionalHeaders = {}) => {
   }
 }
 
+const preparePutItemParams = (table, item, itemIdProperty = 'id') => {
+  const date = new Date();
+  const preparedItem = {
+      [itemIdProperty]: uuid.v1(),
+      ...item,
+      create_datetime: date.toISOString(),
+      update_datetime: date.toISOString()
+  }
+
+  const params = {  
+      TableName: table,
+      Item: preparedItem
+  }
+
+  return params;
+}
+
 exports.prepareResponse = prepareResponse;
+exports.preparePutItemParams = preparePutItemParams;

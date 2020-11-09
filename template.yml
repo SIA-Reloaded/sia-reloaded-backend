@@ -134,7 +134,67 @@ Resources:
             Method: GET 
 
   # Fin Evaluacion Docente Lambdas
-  
+
+  # ------------------ Calendar events --------------------------------
+  createCalendarEvent:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/system/calendar/create-calendar-event.createCalendarEventHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Creates a calendar event
+      #Environment:
+      #  Variables:
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /system/createCalendarEvent
+            Method: GET
+
+  updateCalendarEventHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/system/calendar/update-event.updateCalendarEventHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Creates a calendar event
+      #Environment:
+      #  Variables:
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /system/updateCalendarEventHandler
+            Method: GET 
+
+# ------------------ Courses functions --------------------------------
+
+    createCourse:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/admins/create-course.createCourse
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP post method to add one item to a DynamoDB table.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Courses
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TableName: !Ref Courses
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /system/createCourse
+            Method: POST
+
 Outputs:
 
   getUserDataApi:
@@ -177,6 +237,7 @@ Outputs:
     Description: "Implicit IAM Role created for getCourse function"
     Value: !GetAtt getCourse.Arn 
 
+<<<<<<< HEAD
   getQuestionsApi:
     Description: "API Gateway endpoint URL for Prod stage for getQuestions function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getQuestions"
@@ -186,3 +247,24 @@ Outputs:
   getQuestionsFunctionIamRole:
     Description: "Implicit IAM Role created for getQuestions function"
     Value: !GetAtt getQuestions.Arn 
+=======
+  updateCalendarEventHandlerApi:
+    Description: "API Gateway endpoint URL for Prod stage for updateCalendarEventHandler function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/system/updateCalendarEventHandler"
+  updateCalendarEventHandler:
+    Description: "getCourse Lambda Function ARN"
+    Value: !GetAtt updateCalendarEventHandler.Arn
+  getupdateCalendarEventHandlerFunctionIamRole:
+    Description: "Implicit IAM Role created for updateCalendarEventHandler function"
+    Value: !GetAtt updateCalendarEventHandler.Arn 
+
+  createCourseHandlerApi:
+    Description: "API Gateway endpoint URL for Prod stage for createCourseHandlerHandler function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/system/createCourse"
+  createCourseHandler:
+    Description: "getCourse Lambda Function ARN"
+    Value: !GetAtt createCourseHandler.Arn
+  postCreateCourseFunctionIamRole:
+    Description: "Implicit IAM Role created for createCourseHandler function"
+    Value: !GetAtt createCourseHandler.Arn 
+>>>>>>> develop
