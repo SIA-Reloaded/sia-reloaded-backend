@@ -264,7 +264,7 @@ Outputs:
   getQuestionsApi:
     Description: "API Gateway endpoint URL for Prod stage for getQuestions function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getQuestions"
-  getCourse:
+  getQuestions:
     Description: "getQuestions Lambda Function ARN"
     Value: !GetAtt getQuestions.Arn
   getQuestionsFunctionIamRole:
@@ -275,7 +275,7 @@ Outputs:
   putTeacherRateApi:
     Description: "API Gateway endpoint URL for Prod stage for putTeacherRate function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/putTeacherRate"
-  getCourse:
+  putTeacher:
     Description: "putTeacherRate Lambda Function ARN"
     Value: !GetAtt putTeacherRate.Arn
   putTeacherRateFunctionIamRole:

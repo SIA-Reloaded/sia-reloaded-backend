@@ -1,3 +1,4 @@
 node_modules
 
 .aws_sam
+.aws-sam
