@@ -12,7 +12,7 @@ const Utils = require('../../utils');
 /**
  * A simple example includes a HTTP post method to add one item to a DynamoDB table.
  */
-exports.createCourse = async (event) => {
+exports.createCourseGroup = async (event) => {
   if (event.httpMethod !== 'POST') {
     throw new Error(`postMethod only accepts POST method, you tried: ${event.httpMethod} method.`);
   }
@@ -21,11 +21,19 @@ exports.createCourse = async (event) => {
 
   // Get id and name from the body of the request
   const body = JSON.parse(event.body)
-  const { name, code } = body
-  console.info('table name:', tableName);
+  const { name, code, capacityDistribution, schedule, group, classroom, students, teacherID } = body
+
   // Creates a new item, or replaces an old item with a new item
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
-  const params = Utils.preparePutItemParams(tableName, { name, code });
+  const params = Utils.preparePutItemParams(tableName, {
+    name,
+    code,
+    capacityDistribution,
+    schedule,
+    classroom,
+    students,
+    teacherID
+  });
   console.info('params:', params);
   const result = await docClient.put(params).promise(tableName);
 
