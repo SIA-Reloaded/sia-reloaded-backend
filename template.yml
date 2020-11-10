@@ -199,7 +199,7 @@ Resources:
   createCourse:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/admins/create-course.createCourse
+      Handler: src/handlers/admins/create-course.courseGroups
       Runtime: nodejs12.x
       MemorySize: 128
       Timeout: 100
@@ -287,6 +287,32 @@ Resources:
           Properties:
             Path: /admin/getCourseGroups
             Method: GET
+
+#--------------------------------- Users
+
+  createUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/system/create-user.createUser
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: A simple example includes a HTTP post method to add one item to a DynamoDB table.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Users
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref Users
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /system/createUser
+            Method: POST
+
 
 #--------------------------------- Tablas
 
@@ -377,7 +403,7 @@ Outputs:
 
   getUserDataApi:
     Description: "API Gateway endpoint URL for Prod stage for getUserData function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/system/getUserData"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/system/getUserData/{username}"
   getUserData:
     Description: "getUserData Lambda Function ARN"
     Value: !GetAtt getUserData.Arn
@@ -464,3 +490,13 @@ Outputs:
   getCourseGroupsFunctionIamRole:
     Description: "Implicit IAM Role created for getCourseGroups function"
     Value: !GetAtt getCourseGroupsRole.Arn
+  
+  createUserApi:
+    Description: "API Gateway endpoint URL for Prod stage for createUser function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/system/createUser"
+  createUser:
+    Description: "createUser Lambda Function ARN"
+    Value: !GetAtt createUser.Arn
+  createUserFunctionIamRole:
+    Description: "Implicit IAM Role created for createUser function"
+    Value: !GetAtt createUserRole.Arn
