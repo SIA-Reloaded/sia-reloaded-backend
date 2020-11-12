@@ -10,20 +10,31 @@ exports.getRatesHandler = async (event) => {
         throw new Error(`getAllItems only accept GET method, you tried: ${event.httpMethod}`);
     }
 
+
     const queryParameters = event.queryStringParameters
-    
+    console.log(queryParameters)
+
     const params = {
         TableName: tableName,
-        Key: {
-            "teacherID": queryParameters.teacherID,
-            "semester": queryParameters.semester
+        KeyConditionExpression: 'teacherID = :tID and academicCalendar = :aCalendar',
+        ExpressionAttributeValues: {
+            ':tID': queryParameters.teacherID,
+            ':aCalendar': queryParameters.academicCalendar
         }
     };
 
-    const data = await docClient.get(params).promise();
-    const item = data.Item;
+    let response = 0
 
-    const response = Utils.prepareResponse(Item);
+    docClient.query(params, function (err, data) {
+        if (err) {
+            console.log("da error ",err)
+            response = Utils.prepareResponse(err);
+        } else {
+            console.log(data)
+            response = Utils.prepareResponse(data);
+        }
+    })
+
 
     // All log statements are written to CloudWatch
     console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);

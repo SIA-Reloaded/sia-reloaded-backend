@@ -77,11 +77,12 @@ exports.putTeacherRateHandler = async (event) => {
 
 
 
-    const params = {
-        TableName: tableName,
-        Item: teacherRate
-    };
+    // const params = {
+    //     TableName: tableName,
+    //     Item: teacherRate
+    // };
 
+    const params = Utils.preparePutItemParams(tableName, teacherRate)
     const data = await docClient.put(params).promise();
 
     const response = Utils.prepareResponse(data);
