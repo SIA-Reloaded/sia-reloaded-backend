@@ -11,26 +11,31 @@ exports.getRatesHandler = async (event) => {
     }
 
 
-    const queryParameters = event.queryStringParameters
+    const { teacherID, academicCalendar } = event.queryStringParameters
 
     let params = {}
+    const academicCalendarInit = "201501"
+    const academicCalendarLast = "202002"
 
-    if (queryParameters.academicCalendar) {
+
+    if (academicCalendar) {
         params = {
             TableName: tableName,
             FilterExpression: 'teacherID = :tID and academicCalendar = :aCalendar',
             ExpressionAttributeValues: {
-                ':tID': queryParameters.teacherID,
-                ':aCalendar': queryParameters.academicCalendar
+                ':tID': teacherID,
+                ':aCalendar': academicCalendar
             }
         }
     } else {
         //KeyConditionExpression: "#yr = :yyyy and title between :letter1 and :letter2",
         params = {
             TableName: tableName,
-            FilterExpression: 'teacherID = :tID and academicCalendar between 201501 and 202001',
+            FilterExpression: 'teacherID = :tID and academicCalendar between :init and :last',
             ExpressionAttributeValues: {
-                ':tID': queryParameters.teacherID
+                ':tID': teacherID,
+                ':init': academicCalendarInit,
+                ':last': academicCalendarLast,
             }
         }
     }
