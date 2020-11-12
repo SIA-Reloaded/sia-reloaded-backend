@@ -10,13 +10,15 @@ exports.getCourseGroups = async (event) => {
     throw new Error(`getMethod only accept GET method, you tried: ${event.httpMethod}`);
   }
 
-  const {courseCode, groupID} = event.queryStringParameters
+  console.log(event)
+
+  const {courseCode, groupID } = event.queryStringParameters
   
-  const params;
+  let params;
   if (groupID) {
     params = {
       TableName: tableName,
-      KeyConditionExpression: 'code = :c and id = :i',
+      FilterExpression: 'code = :c and id = :i',
       ExpressionAttributeValues: {
         ':c': courseCode,
         ':i': groupID,
@@ -25,15 +27,15 @@ exports.getCourseGroups = async (event) => {
   } else {
     params = {
       TableName: tableName,
-      KeyConditionExpression: 'code = :c',
+      FilterExpression: 'code = :c',
       ExpressionAttributeValues: {
         ':c': courseCode,
       }
     };
   }
   
-  const data = await docClient.Query(params).promise()
-  const item = data.Item;
+  const data = await docClient.Scan(params).promise()
+  const item = data.Items;
 
   console.info('data: ', data)
  

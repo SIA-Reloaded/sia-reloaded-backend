@@ -13,16 +13,17 @@ exports.getByUserDataHandler = async (event) => {
   const username = event.pathParameters.username;
  
 
-  var params = {
+  const params = {
     TableName: tableName,
-    Key: {
-      "id": username
-    },
+    FilterExpression: 'username = :username',
+    ExpressionAttributeValues: {
+      ":username": username,
+    }
   };
   console.log(params)
 
-  const data = await docClient.get(params).promise();
-  const item = data.Item;
+  const data = await docClient.scan(params).promise();
+  const item = data.Items;
  
   const response = Utils.prepareResponse(item);
 

@@ -1,4 +1,4 @@
-openapi: 3.0.1
+swagger: '2.0'
 info:
   title: SUIA API definition
   description: Sistema Unificado de Información Académica API.
@@ -17,52 +17,9 @@ tags:
   description: Students related microservices.
 - name: Teachers
   description: Teachers related microservices.
-- name: Managers
+- name: Admins
   description: Managers related microservices.
 paths:
-  /system/getUserRol:
-    get:
-      tags:
-      - System
-      summary: Get an array of user roles for a given user.
-      operationId: getUserRol
-      parameters:
-      - name: userID
-        in: query
-        required: true
-        schema:
-          type: string
-      responses:
-        200:
-          description: Roles retrieved.
-          content:
-            application/json:
-              schema:
-                type: string
-                items: {
-                  $ref: '#/components/schemas/UserRoles'
-                }
-        403:
-          description: User not authorized.
-          content:
-            application/json:
-              schema:
-                title: Forbiden
-                type: string
-        404:
-          description: Not found
-          content:
-            application/json:
-              schema:
-                title: User not found.
-                type: string
-        500:
-          description: Server error.
-          content:
-            application/json:
-              schema:
-                title: InternalServerError
-                type: string
   /system/getUserData:
     get:
       tags:
@@ -283,18 +240,18 @@ paths:
                 title: InternalServerError
                 type: string
 
-  /maganers/updateGroupCapacity:
+  /admin/courseGroups:
     post:
       tags:
-      - Managers
-      summary: updates the total capacity of a group
-      description: updates the total capacity of a group
-      operationId: updateGroupCapacity
+      - Admins
+      summary: creates a group with the given data.
+      description: creates a group with the given data.
+      operationId: createGroup
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateGroupPayload'
+              $ref: '#/components/schemas/CourseGroup'
         required: true
       responses:
         200:
@@ -333,10 +290,196 @@ paths:
                 title: InternalServerError
                 type: string
       x-codegen-request-body-name: body
-  /maganers/enrollStudent:
+    put:
+      tags:
+      - Admins
+      summary: updatesa group with the given data.
+      description: updatesa group with the given data.
+      operationId: updateGroup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseGroup'
+        required: true
+      responses:
+        200:
+          description: group capacity updated succesfully.
+          content:
+            application/json:
+              schema:
+                title: Done message
+                type: string
+        400:
+          description: Bad query, body not invalid.
+          content:
+            application/json:
+              schema:
+                title: Badquery
+                type: string
+        403:
+          description: Whoever is making this request is not autenticated.
+          content:
+            application/json:
+              schema:
+                title: Forbiden
+                type: string
+        404:
+          description: group not valid, this happens if the group does not exists.
+          content:
+            application/json:
+              schema:
+                title: group not found.
+                type: string
+        500:
+          description: Server Error.
+          content:
+            application/json:
+              schema:
+                title: InternalServerError
+                type: string
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - Admins
+      summary: deteles a group with the given data.
+      description: deletes a group with the given data.
+      operationId: deleteGroup
+      parameters:
+      - name: groupID
+        in: query
+        required: true
+        schema:
+          type: string
+      
+      responses:
+        200:
+          description: group capacity updated succesfully.
+          content:
+            application/json:
+              schema:
+                title: Done message
+                type: string
+        400:
+          description: Bad query, body not invalid.
+          content:
+            application/json:
+              schema:
+                title: Badquery
+                type: string
+        403:
+          description: Whoever is making this request is not autenticated.
+          content:
+            application/json:
+              schema:
+                title: Forbiden
+                type: string
+        404:
+          description: group not valid, this happens if the group does not exists.
+          content:
+            application/json:
+              schema:
+                title: group not found.
+                type: string
+        500:
+          description: Server Error.
+          content:
+            application/json:
+              schema:
+                title: InternalServerError
+                type: string
+      x-codegen-request-body-name: body
+  /admin/getCourses:
+    get:
+      tags:
+      - Admins
+      summary: Retieve all courses on db
+      operationId: getAllCourses
+      responses:
+        200:
+          description: Courses retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {
+                  $ref: '#/components/schemas/Course'
+                }
+        403:
+          description: User not authorized.
+          content:
+            application/json:
+              schema:
+                title: Forbiden
+                type: string
+        404:
+          description: User not valid, this happens if the user does not exists.
+          content:
+            application/json:
+              schema:
+                title: User not found.
+                type: string
+        500:
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                title: InternalServerError
+                type: string
+  /admin/getCoursesGroup:
+    get:
+      tags:
+      - Admins
+      summary: Retieve all courses on db
+      operationId: getCourseGroup
+      parameters:
+      - name: courseCode
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: groupID
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: Courses retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {
+                  $ref: '#/components/schemas/CourseGroup'
+                }
+        403:
+          description: User not authorized.
+          content:
+            application/json:
+              schema:
+                title: Forbiden
+                type: string
+        404:
+          description: User not valid, this happens if the user does not exists.
+          content:
+            application/json:
+              schema:
+                title: User not found.
+                type: string
+        500:
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                title: InternalServerError
+                type: string
+  
+  
+  /admin/enrollStudent:
     post:
       tags:
-      - Managers
+      - Admins
       summary: Enroll a student on a given group
       description: Enroll a student on a given group
       operationId: enrollStudent
@@ -580,40 +723,36 @@ components:
           items: {
             $ref: '#/components/schemas/RateAnswer'
           }
+    RateQuestionOption:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: number
     RateQuestion:
       type: object
       properties:
         id:
           type: string
-        body:
+        label:
           type: string
         questionType: 
           type: string
         options: 
           type: array
           items: {
-            type: string
+            $ref: '#/components/schemas/RateQuestionOption'            
           }
-        minScore:
-          type: number
-        maxScore:
-          type: number
     RateAnswer:
       type: object
       properties:
         questionID: 
           type: string
-        body:  # Contenido de la respuesta en caso de que sea pregunta abierta
+        questionType:  # Contenido de la respuesta en caso de que sea pregunta abierta
           type: string
-        score: # Puntanje en caso de que sea pregunta de puntaje
+        value: # Puntanje en caso de que sea pregunta de puntaje
           type: number
-        value: # En caso de que sea booleano
-          type: number
-        selectedOptions:
-          type: array
-          items: {
-            type: string
-          }
     StudentData: # Este objeto es representa una tabla
       type: object
       properties:
@@ -665,6 +804,15 @@ components:
           items: {
             type: object
           }
+    Course:
+      type: object
+      properties:
+        id: 
+          type: string
+        name: 
+          type: string
+        code: 
+          type: string
     CourseGroup: # Este objeto es representa una tabla
       type: object
       properties:
@@ -677,6 +825,8 @@ components:
         capacityDistribution:
           $ref: '#/components/schemas/GroupCapacityDistribution'
         schedule:
+          $ref: '#/components/schemas/GroupSchedule'
+        calendarEventsId: 
           type: object
         meetLink:
           type: string
@@ -707,15 +857,6 @@ components:
           type: string
         email:
           type: string
-    UpdateGroupPayload:
-      type: object
-      properties:
-        groupID: 
-          type: string
-        capacity:
-          type: number
-        capacityDistribution:
-          $ref: '#/components/schemas/GroupCapacityDistribution'
     EnrollStudentPayload:
       type: object
       properties:
@@ -726,12 +867,28 @@ components:
     GroupCapacityDistribution:
       type: object
       properties:
-        disciplinary:
+        disciplinaryObligatory:
+          type: number
+        disciplinaryOptional:
           type: number
         fundamentation:
           type: number
         freeElection:
           type: number
+    GroupSchedule:
+      type: array
+      items: {
+        $ref: '#/components/schemas/ClassSchedule'
+      }
+    ClassSchedule:
+      type: object
+      properties:
+        day:
+          type: string
+        startHours:
+          type: string
+        endHours: 
+          type: string
     UserRoles:
       type: string
       enum:
