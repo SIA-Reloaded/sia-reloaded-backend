@@ -134,28 +134,6 @@ Resources:
             Path: /teachers/getQuestions
             Method: GET 
 
-  putTeacherRate:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: src/handlers/teachers/put-teacherRate.putTeacherRateHandler
-      Runtime: nodejs12.x
-      MemorySize: 128
-      Timeout: 100
-      Description: Put the rate for a teacher using HTTP post method to a DynamoDB table.
-      Policies:
-        # Give Create/Read/Update/Delete Permissions to the SampleTable
-        - DynamoDBCrudPolicy:
-            TableName: !Ref TeacherRate
-      Environment:
-        Variables:
-          # Make table name accessible as environment variable from function code during execution
-          TABLE: !Ref TeacherRate
-      Events:
-        Api:
-          Type: Api
-          Properties:
-            Path: /teachers/putTeacherRate
-            Method: POST 
 
   # Fin Evaluacion Docente Lambdas
 
@@ -447,16 +425,6 @@ Outputs:
   getQuestionsFunctionIamRole:
     Description: "Implicit IAM Role created for getQuestions function"
     Value: !GetAtt getQuestionsRole.Arn
-
-  putTeacherRateApi:
-    Description: "API Gateway endpoint URL for Prod stage for putTeacherRate function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/putTeacherRate"
-  putTeacherRate:
-    Description: "putTeacherRate Lambda Function ARN"
-    Value: !GetAtt putTeacherRate.Arn
-  putTeacherRateFunctionIamRole:
-    Description: "Implicit IAM Role created for putTeacherRate function"
-    Value: !GetAtt putTeacherRate.Arn
 
   updateCalendarEventHandlerApi:
     Description: "API Gateway endpoint URL for Prod stage for updateCalendarEventHandler function"

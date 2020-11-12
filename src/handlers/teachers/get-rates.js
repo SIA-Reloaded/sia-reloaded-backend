@@ -12,29 +12,36 @@ exports.getRatesHandler = async (event) => {
 
 
     const queryParameters = event.queryStringParameters
-    console.log(queryParameters)
 
-    const params = {
-        TableName: tableName,
-        KeyConditionExpression: 'teacherID = :tID and academicCalendar = :aCalendar',
-        ExpressionAttributeValues: {
-            ':tID': queryParameters.teacherID,
-            ':aCalendar': queryParameters.academicCalendar
+    let params = {}
+
+    if (queryParameters.academicCalendar) {
+        params = {
+            TableName: tableName,
+            FilterExpression: 'teacherID = :tID and academicCalendar = :aCalendar',
+            ExpressionAttributeValues: {
+                ':tID': queryParameters.teacherID,
+                ':aCalendar': queryParameters.academicCalendar
+            }
         }
-    };
-
-    let response = 0
-
-    docClient.query(params, function (err, data) {
-        if (err) {
-            console.log("da error ",err)
-            response = Utils.prepareResponse(err);
-        } else {
-            console.log(data)
-            response = Utils.prepareResponse(data);
+    } else {
+        //KeyConditionExpression: "#yr = :yyyy and title between :letter1 and :letter2",
+        params = {
+            TableName: tableName,
+            FilterExpression: 'teacherID = :tID and academicCalendar between 201501 and 202001',
+            ExpressionAttributeValues: {
+                ':tID': queryParameters.teacherID
+            }
         }
-    })
+    }
 
+
+    const data = await docClient.Scan(params).promise()
+    const item = data.Items;
+
+    console.info('data: ', data)
+
+    const response = Utils.prepareResponse(item);
 
     // All log statements are written to CloudWatch
     console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
