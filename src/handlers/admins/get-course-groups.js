@@ -34,7 +34,7 @@ exports.getCourseGroups = async (event) => {
     };
   }
   
-  const data = await docClient.Scan(params).promise()
+  const data = await docClient.scan(params).promise()
   const item = data.Items;
 
   console.info('data: ', data)
