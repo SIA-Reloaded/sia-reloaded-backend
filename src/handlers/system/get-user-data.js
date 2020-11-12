@@ -13,12 +13,12 @@ exports.getByUserDataHandler = async (event) => {
   const username = event.pathParameters.username;
  
 
-  var params = {
+  const params = {
     TableName: tableName,
     FilterExpression: 'username = :username',
     ExpressionAttributeValues: {
       ":username": username,
-  }
+    }
   };
   console.log(params)
 

@@ -168,14 +168,21 @@ Resources:
       MemorySize: 128
       Timeout: 100
       Description: Creates a calendar event
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CourseGroups
+        - DynamoDBStreamReadPolicy:
+            TableName: !Ref CourseGroups
+            StreamName: !GetAtt CourseGroups.StreamArn
       #Environment:
       #  Variables:
       Events:
-        Api:
-          Type: Api
+        DDBEvent: 
+          Type: DynamoDB
           Properties:
-            Path: /system/createCalendarEvent
-            Method: GET
+            Stream: 
+              !GetAtt CourseGroups.StreamArn   
+            StartingPosition: TRIM_HORIZON
 
   updateCalendarEventHandler:
     Type: AWS::Serverless::Function
