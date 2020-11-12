@@ -13,9 +13,9 @@ const Utils = require('../../utils');
  * A simple example includes a HTTP post method to add one item to a DynamoDB table.
  */
 exports.createCourseGroup = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    throw new Error(`postMethod only accepts POST method, you tried: ${event.httpMethod} method.`);
-  }
+  // if (event.httpMethod !== 'POST') {
+  //   throw new Error(`postMethod only accepts POST method, you tried: ${event.httpMethod} method.`);
+  // }
   // All log statements are written to CloudWatch
   console.info('received:', event);
 
