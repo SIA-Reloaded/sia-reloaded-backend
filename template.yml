@@ -216,10 +216,13 @@ Resources:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
         - DynamoDBCrudPolicy:
             TableName: !Ref CourseGroups
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AcademicCalendar
       Environment:
         Variables:
           # Make table name accessible as environment variable from function code during execution
           TABLE: !Ref CourseGroups
+          ACADEMIC_CALENDAR: !Ref AcademicCalendar
       Events:
         Api:
           Type: Api
@@ -298,6 +301,30 @@ Resources:
             Path: /system/createUser
             Method: POST
 
+#--------------------------------- Academic calendar
+
+  getCurrentAcademicCalendar:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/system/get-current-academic-calendar.getCurrentAcademicCalendarHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets the current academic calendar
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AcademicCalendar
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref AcademicCalendar
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /system/getCurrentAcademicCalendar
+            Method: GET
 
 #--------------------------------- Tablas
 
@@ -373,6 +400,16 @@ Resources:
         WriteCapacityUnits: 5
 
   Users:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  AcademicCalendar:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
@@ -475,3 +512,13 @@ Outputs:
   createUserFunctionIamRole:
     Description: "Implicit IAM Role created for createUser function"
     Value: !GetAtt createUserRole.Arn
+  
+  getCurrentAcademicCalendarApi:
+    Description: "API Gateway endpoint URL for Prod stage for getCurrentAcademicCalendar function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/system/createUser"
+  getCurrentAcademicCalendar:
+    Description: "getCurrentAcademicCalendar Lambda Function ARN"
+    Value: !GetAtt getCurrentAcademicCalendar.Arn
+  getCurrentAcademicCalendarFunctionIamRole:
+    Description: "Implicit IAM Role created for getCurrentAcademicCalendar function"
+    Value: !GetAtt getCurrentAcademicCalendarRole.Arn

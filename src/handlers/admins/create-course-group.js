@@ -1,13 +1,15 @@
 // Create clients and set shared const values outside of the handler.
 
 // Create a DocumentClient that represents the query to add an item
-const dynamodb = require('aws-sdk/clients/dynamodb');
+const dynamodb = require("aws-sdk/clients/dynamodb");
 const docClient = new dynamodb.DocumentClient();
 
 // Get the DynamoDB table name from environment variables
 const tableName = process.env.TABLE;
+const academicCalendarTableName = process.env.ACADEMIC_CALENDAR;
 
-const Utils = require('../../utils');
+const Utils = require("../../utils");
+const AcademicCalendar = require("../system/get-current-academic-calendar");
 
 /**
  * A simple example includes a HTTP post method to add one item to a DynamoDB table.
@@ -17,12 +19,26 @@ exports.createCourseGroup = async (event) => {
   //   throw new Error(`postMethod only accepts POST method, you tried: ${event.httpMethod} method.`);
   // }
   // All log statements are written to CloudWatch
-  console.info('received:', event);
+  console.info("received:", event);
 
   // Get id and name from the body of the request
-  const body = JSON.parse(event.body)
-  const { name, code, capacityDistribution, schedule, group, classroom, students, teacherID } = body
+  const body = JSON.parse(event.body);
+  const {
+    name,
+    code,
+    capacityDistribution,
+    schedule,
+    group,
+    classroom,
+    students,
+    teacherID,
+  } = body;
+  const academicCalendarItem = await AcademicCalendar.getCurrentAcademicCalendar(
+    academicCalendarTableName
+  );
+  const academicCalendar = academicCalendarItem.id;
 
+  console.log(academicCalendarItem);
   // Creates a new item, or replaces an old item with a new item
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
   const params = Utils.preparePutItemParams(tableName, {
@@ -32,13 +48,16 @@ exports.createCourseGroup = async (event) => {
     schedule,
     classroom,
     students,
-    teacherID
+    teacherID,
+    academicCalendar,
   });
-  console.info('params:', params);
+  console.info("params:", params);
   const result = await docClient.put(params).promise(tableName);
 
   const response = Utils.prepareResponse(result);
   // All log statements are written to CloudWatch
-  console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
+  console.info(
+    `response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`
+  );
   return response;
-}
+};
