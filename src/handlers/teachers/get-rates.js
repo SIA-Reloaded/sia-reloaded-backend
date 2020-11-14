@@ -17,22 +17,24 @@ exports.getRatesHandler = async (event) => {
 
     const { teacherID, academicCalendar } = event.queryStringParameters;
 
-    let params = [];
-
+    let params = {}
+    let response = []
 
     if (academicCalendar) {
+        arrAcademicCalendar = academicCalendar.split(",")
+        for (i = 0; i < arrAcademicCalendar.length; i++) {
 
-        for (i = 0; i < academicCalendar.length; i++) {
             params = {
                 TableName: tableNameTeacher,
                 FilterExpression: "teacherID = :tID and academicCalendar = :idAcademicCalendar",
                 ExpressionAttributeValues: {
                     ":tID": teacherID,
-                    ":idAcademicCalendar": academicCalendar[i],
+                    ":idAcademicCalendar": arrAcademicCalendar[i],
                 }
             }
+            const data = await docClient.scan(params).promise();
+            response.push(data.Items)
 
-            
         }
 
     } else {
@@ -50,14 +52,12 @@ exports.getRatesHandler = async (event) => {
                 ":idAcademicCalendar": idAcademicCalendar
             },
         };
+
+        const data = await docClient.scan(params).promise();
+        response = data.Items
     }
 
-    const data = await docClient.scan(params).promise();
-    const item = data.Items;
-
-    console.info("data: ", data);
-
-    const response = Utils.prepareResponse(item);
+    response = Utils.prepareResponse(response);
 
     // All log statements are written to CloudWatch
     console.info(
