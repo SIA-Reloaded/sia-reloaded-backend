@@ -61,12 +61,28 @@ Resources:
           # Make table name accessible as environment variable from function code during execution
           TABLE_TEACHER: !Ref TeacherRate
           TABLE_ACADEMIC_CALENDAR: !Ref AcademicCalendar
-          
+    
+  getSemestersList:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-semesters-list.getSemestersListHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets the list of semesters with a HTTP get method from a DynamoDB table.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AcademicCalendar
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref AcademicCalendar
       Events:
         Api:
           Type: Api
           Properties:
-            Path: /teachers/getRates
+            Path: /teachers/getSemestersList
             Method: GET
 
   getCourses:
@@ -446,6 +462,16 @@ Outputs:
   getRatesFunctionIamRole:
     Description: "Implicit IAM Role created for getRates function"
     Value: !GetAtt getRatesRole.Arn
+
+  getSemestersListApi:
+    Description: "API Gateway endpoint URL for Prod stage for getSemestersList function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getSemestersList"
+  getSemestersList:
+    Description: "getSemestersList Lambda Function ARN"
+    Value: !GetAtt getSemestersList.Arn
+  getSemestersListFunctionIamRole:
+    Description: "Implicit IAM Role created for getSemestersList function"
+    Value: !GetAtt getSemestersListRole.Arn
   
   getCoursesApi:
     Description: "API Gateway endpoint URL for Prod stage for getCourses function"
