@@ -17,8 +17,10 @@ Transform:
 Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-  # Evaluacion Docente Lambdas
+  
 
+
+  # Evaluacion Docente Lambdas
   getUserData:
     Type: AWS::Serverless::Function
     Properties:
@@ -156,6 +158,31 @@ Resources:
 
 
   # Fin Evaluacion Docente Lambdas
+
+  # ------------------ Student grades lambdas --------------------------------
+  putStudentGrades:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/put-student-grades.putStudentGradesHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Puts students grades for a course group with a HTTP post method to a DynamoDB table.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CourseGrades
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref CourseGrades
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/putStudentGrades
+            Method: POST 
+  # ------------------ end Student grades lambdas --------------------------------
 
   # ------------------ Calendar events --------------------------------
   createCalendarEvent:
@@ -379,6 +406,16 @@ Resources:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
   
+  CourseGrades:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: course_id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  
   Professors:
     Type: AWS::Serverless::SimpleTable
     Properties:
@@ -552,3 +589,13 @@ Outputs:
   getCurrentAcademicCalendarFunctionIamRole:
     Description: "Implicit IAM Role created for getCurrentAcademicCalendar function"
     Value: !GetAtt getCurrentAcademicCalendarRole.Arn
+
+  putStudentGradesApi:
+    Description: "API Gateway endpoint URL for Prod stage for putStudentGrades function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/putStudentGrades"
+  putStudentGrades:
+    Description: "putStudentGrades Lambda Function ARN"
+    Value: !GetAtt putStudentGrades.Arn
+  putStudentGradesFunctionIamRole:
+    Description: "Implicit IAM Role created for putStudentGrades function"
+    Value: !GetAtt putStudentGradesRole.Arn

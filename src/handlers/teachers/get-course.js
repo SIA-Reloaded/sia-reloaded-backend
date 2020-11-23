@@ -16,8 +16,7 @@ exports.getCourseHandler = async (event) => {
   const params = {
     TableName: tableName,
     Key: {
-      "teacherID": queryParameters.teacherID,
-      "id": queryParameters.courseID
+      "id": queryParameters.course_id
     }
   };
 
