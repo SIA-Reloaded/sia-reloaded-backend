@@ -10,14 +10,14 @@ exports.getByUserDataHandler = async (event) => {
     throw new Error(`getMethod only accept GET method, you tried: ${event.httpMethod}`);
   }
   
-  const username = event.pathParameters.username;
+  const userIdentity = event.pathParameters.username;
  
 
   const params = {
     TableName: tableName,
-    FilterExpression: 'username = :username',
+    FilterExpression: 'username = :userIdentity or id = :userIdentity',
     ExpressionAttributeValues: {
-      ":username": username,
+      ":userIdentity": userIdentity,
     }
   };
   console.log(params)

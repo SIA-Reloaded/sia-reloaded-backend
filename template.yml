@@ -17,8 +17,10 @@ Transform:
 Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-  # Evaluacion Docente Lambdas
+  
 
+
+  # Evaluacion Docente Lambdas
   getUserData:
     Type: AWS::Serverless::Function
     Properties:
@@ -61,6 +63,12 @@ Resources:
           # Make table name accessible as environment variable from function code during execution
           TABLE_TEACHER: !Ref TeacherRate
           TABLE_ACADEMIC_CALENDAR: !Ref AcademicCalendar
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getRates
+            Method: GET
     
   getSemestersList:
     Type: AWS::Serverless::Function
@@ -130,6 +138,29 @@ Resources:
           Properties:
             Path: /teachers/getCourse
             Method: GET 
+
+  getCourseByCode:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-course-by-code.getCourseByCodeHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: gets all groups of a course by its code
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CourseGroups
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref CourseGroups
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getCourseById
+            Method: GET 
     
   getQuestions:
     Type: AWS::Serverless::Function
@@ -156,6 +187,54 @@ Resources:
 
 
   # Fin Evaluacion Docente Lambdas
+
+  # ------------------ Student grades lambdas --------------------------------
+  getCourseGrades:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-course-grades.getCourseGradesHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets one teacher evaluation with a HTTP get method from a DynamoDB table.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CourseGrades
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref CourseGrades
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getGrades
+            Method: GET
+
+  putStudentGrades:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/put-student-grades.putStudentGradesHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Puts students grades for a course group with a HTTP post method to a DynamoDB table.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CourseGrades
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref CourseGrades
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/putStudentGrades
+            Method: POST 
+  # ------------------ end Student grades lambdas --------------------------------
 
   # ------------------ Calendar events --------------------------------
   createCalendarEvent:
@@ -295,7 +374,76 @@ Resources:
           Properties:
             Path: /admin/getCourseGroups
             Method: GET
+  
+  
+  updateCourseGroup:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/admins/update-course-group.updateCourseGroupHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Updates specific course group with a http put method.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CourseGroups
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref CourseGroups
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /admin/updateCourseGroup
+            Method: PUT
+  
+  updateRequest:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/admins/update-request.updateRequestHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Updates state of a overbook request.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Request
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref Request
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /admin/updateRequest
+            Method: PUT
 
+  putStudentInCourseGroup:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/admins/put-student-in-course-group.putStudentInCourseGroupHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Updates the students array of the course group.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CourseGroups
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref CourseGroups
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /admin/putStudentInCourseGroup
+            Method: PUT          
 #--------------------------------- Users
 
   createUser:
@@ -346,6 +494,77 @@ Resources:
             Path: /system/getCurrentAcademicCalendar
             Method: GET
 
+
+# ------------------ Sobrecupo functions --------------------------------
+  getRequest:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/admins/get-request.getRequestHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets an specific item of the over quota table with a http-get method
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Request
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref Request
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /admin/getRequest
+            Method: GET
+  
+  getAllRequests:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/admins/get-all-requests.getAllRequestsHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Gets all items of the over quota table with a http-get method
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Request
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref Request
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /admin/getAllRequests
+            Method: GET
+
+  putRequest:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/admins/put-request.putRequestHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Put an item in the over quota table with a http-post method
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Request
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref Request
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /admin/putRequest
+            Method: POST
+
 #--------------------------------- Tablas
 
   # DynamoDB table to store item: {id: &lt;ID&gt;, name: &lt;NAME&gt;}
@@ -370,6 +589,16 @@ Resources:
         WriteCapacityUnits: 5
   
   CourseGroups:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  
+  CourseGrades:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
@@ -430,6 +659,16 @@ Resources:
         WriteCapacityUnits: 5
 
   AcademicCalendar:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  
+  Request:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
@@ -552,3 +791,93 @@ Outputs:
   getCurrentAcademicCalendarFunctionIamRole:
     Description: "Implicit IAM Role created for getCurrentAcademicCalendar function"
     Value: !GetAtt getCurrentAcademicCalendarRole.Arn
+
+  getCourseGradesApi:
+    Description: "API Gateway endpoint URL for Prod stage for getCourseGrades function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getCourseGrades"
+  getCourseGrades:
+    Description: "getCourseGrades Lambda Function ARN"
+    Value: !GetAtt getCourseGrades.Arn
+  getCourseGradesFunctionIamRole:
+    Description: "Implicit IAM Role created for getCourseGrades function"
+    Value: !GetAtt getCourseGradesRole.Arn
+
+  putStudentGradesApi:
+    Description: "API Gateway endpoint URL for Prod stage for putStudentGrades function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/putStudentGrades"
+  putStudentGrades:
+    Description: "putStudentGrades Lambda Function ARN"
+    Value: !GetAtt putStudentGrades.Arn
+  putStudentGradesFunctionIamRole:
+    Description: "Implicit IAM Role created for putStudentGrades function"
+    Value: !GetAtt putStudentGradesRole.Arn
+
+  updateCourseGroupApi:
+    Description: "API Gateway endpoint URL for Prod stage for updateCourseGroup function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/admin/updateCourseGroup"
+  updateCourseGroup:
+    Description: "updateCourseGroup Lambda Function ARN"
+    Value: !GetAtt updateCourseGroup.Arn
+  updateCourseGroupFunctionIamRole:
+    Description: "Implicit IAM Role created for updateCourseGroup function"
+    Value: !GetAtt updateCourseGroupRole.Arn
+
+  getRequestApi:
+    Description: "API Gateway endpoint URL for Prod stage for getRequest function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/admin/getRequest"
+  getRequest:
+    Description: "getRequest Lambda Function ARN"
+    Value: !GetAtt getRequest.Arn
+  getRequestFunctionIamRole:
+    Description: "Implicit IAM Role created for getRequest function"
+    Value: !GetAtt getRequestRole.Arn
+
+  getAllRequestsApi:
+    Description: "API Gateway endpoint URL for Prod stage for getAllRequests function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/admin/getAllRequests"
+  getAllRequests:
+    Description: "getAllRequests Lambda Function ARN"
+    Value: !GetAtt getAllRequests.Arn
+  getAllRequestsFunctionIamRole:
+    Description: "Implicit IAM Role created for getAllRequests function"
+    Value: !GetAtt getAllRequestsRole.Arn
+
+  putRequestApi:
+    Description: "API Gateway endpoint URL for Prod stage for putRequest function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/admin/putRequest"
+  putRequest:
+    Description: "putRequest Lambda Function ARN"
+    Value: !GetAtt putRequest.Arn
+  putRequestFunctionIamRole:
+    Description: "Implicit IAM Role created for putRequest function"
+    Value: !GetAtt putRequestRole.Arn
+
+  getCourseByCodeApi:
+    Description: "API Gateway endpoint URL for Prod stage for getCourseByCode function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getCourseByCode"
+  getCourseByCode:
+    Description: "getCourseByCode Lambda Function ARN"
+    Value: !GetAtt getCourseByCode.Arn
+  getCourseByCodeFunctionIamRole:
+    Description: "Implicit IAM Role created for getCourseByCode function"
+    Value: !GetAtt getCourseByCodeRole.Arn
+  
+  updateRequestApi:
+    Description: "API Gateway endpoint URL for Prod stage for updateRequest function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/admin/updateRequest"
+  updateRequest:
+    Description: "updateRequest Lambda Function ARN"
+    Value: !GetAtt updateRequest.Arn
+  updateRequestFunctionIamRole:
+    Description: "Implicit IAM Role created for updateRequest function"
+    Value: !GetAtt updateRequestRole.Arn
+
+  putStudentInCourseGroupApi:
+    Description: "API Gateway endpoint URL for Prod stage for putStudentInCourseGroup function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/admin/putStudentInCourseGroup"
+  putStudentInCourseGroup:
+    Description: "putStudentInCourseGroup Lambda Function ARN"
+    Value: !GetAtt putStudentInCourseGroup.Arn
+  putStudentInCourseGroupFunctionIamRole:
+    Description: "Implicit IAM Role created for putStudentInCourseGroup function"
+    Value: !GetAtt putStudentInCourseGroupRole.Arn
