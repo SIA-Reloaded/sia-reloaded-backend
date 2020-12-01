@@ -138,6 +138,29 @@ Resources:
           Properties:
             Path: /teachers/getCourse
             Method: GET 
+
+  getCourseByCode:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/teachers/get-course-by-code.getCourseByCodeHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: gets all groups of a course by its code
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CourseGroups
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref CourseGroups
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /teachers/getCourseById
+            Method: GET 
     
   getQuestions:
     Type: AWS::Serverless::Function
@@ -783,3 +806,13 @@ Outputs:
   putRequestFunctionIamRole:
     Description: "Implicit IAM Role created for putRequest function"
     Value: !GetAtt putRequestRole.Arn
+
+  getCourseByCodeApi:
+    Description: "API Gateway endpoint URL for Prod stage for getCourseByCode function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/teachers/getCourseByCode"
+  getCourseByCode:
+    Description: "getCourseByCode Lambda Function ARN"
+    Value: !GetAtt getCourseByCode.Arn
+  getCourseByCodeFunctionIamRole:
+    Description: "Implicit IAM Role created for getCourseByCode function"
+    Value: !GetAtt getCourseByCodeRole.Arn
