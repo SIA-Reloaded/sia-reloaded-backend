@@ -398,7 +398,52 @@ Resources:
           Properties:
             Path: /admin/updateCourseGroup
             Method: PUT
+  
+  updateRequest:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/admins/update-request.updateRequestHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Updates state of a overbook request.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Request
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref Request
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /admin/updateRequest
+            Method: PUT
 
+  putStudentInCourseGroup:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/admins/put-student-in-course-group.putStudentInCourseGroupHandler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Timeout: 100
+      Description: Updates the students array of the course group.
+      Policies:
+        # Give Create/Read/Update/Delete Permissions to the SampleTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CourseGroups
+      Environment:
+        Variables:
+          # Make table name accessible as environment variable from function code during execution
+          TABLE: !Ref CourseGroups
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /admin/putStudentInCourseGroup
+            Method: PUT          
 #--------------------------------- Users
 
   createUser:
@@ -816,3 +861,23 @@ Outputs:
   getCourseByCodeFunctionIamRole:
     Description: "Implicit IAM Role created for getCourseByCode function"
     Value: !GetAtt getCourseByCodeRole.Arn
+  
+  updateRequestApi:
+    Description: "API Gateway endpoint URL for Prod stage for updateRequest function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/admin/updateRequest"
+  updateRequest:
+    Description: "updateRequest Lambda Function ARN"
+    Value: !GetAtt updateRequest.Arn
+  updateRequestFunctionIamRole:
+    Description: "Implicit IAM Role created for updateRequest function"
+    Value: !GetAtt updateRequestRole.Arn
+
+  putStudentInCourseGroupApi:
+    Description: "API Gateway endpoint URL for Prod stage for putStudentInCourseGroup function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/admin/putStudentInCourseGroup"
+  putStudentInCourseGroup:
+    Description: "putStudentInCourseGroup Lambda Function ARN"
+    Value: !GetAtt putStudentInCourseGroup.Arn
+  putStudentInCourseGroupFunctionIamRole:
+    Description: "Implicit IAM Role created for putStudentInCourseGroup function"
+    Value: !GetAtt putStudentInCourseGroupRole.Arn
