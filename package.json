@@ -1,18 +1,24 @@
 {
-    "name": "delete-test-01",
-    "description": "delete-test-01-description",
-    "version": "0.0.1",
-    "private": true,
-    "dependencies": {
-        "aws-sdk": "^2.437.0",
-        "date-fns": "^2.16.1",
-        "googleapis": "^62.0.0",
-        "uuid": "^8.3.1"
-    },
-    "devDependencies": {
-        "jest": "^24.7.1"
-    },
-    "scripts": {
-        "test": "jest"
-    }
+  "name": "delete-test-01",
+  "description": "delete-test-01-description",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "date-fns": "^2.16.1",
+    "dotenv": "^8.2.0",
+    "googleapis": "^62.0.0",
+    "lodash": "^4.17.20",
+    "uuid": "^8.3.1"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.801.0",
+    "jest": "^24.7.1",
+    "path": "^0.12.7",
+    "webpack": "^5.9.0",
+    "webpack-cli": "^4.2.0",
+    "yaml-cfn": "^0.2.3"
+  },
+  "scripts": {
+    "test": "jest"
+  }
 }

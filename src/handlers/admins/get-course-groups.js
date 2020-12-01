@@ -10,13 +10,18 @@ exports.getCourseGroups = async (event) => {
     throw new Error(`getMethod only accept GET method, you tried: ${event.httpMethod}`);
   }
   console.info(event)
-
-  const {courseCode, courseName } = event.queryStringParameters
+  console.info("lalalalalalalalal")
+  const query = event.queryStringParameters || {};
+  const {courseCode = undefined, courseName = undefined } = query
   
   let params;
-  if (courseName) {
+  if (!courseName && !courseCode) {
     params = {
-      TableName: tableNamm,
+      TableName: tableName,
+    };
+  } else if (courseName) {
+    params = {
+      TableName: tableName,
       FilterExpression: 'code = :c and name = :n',
       ExpressionAttributeValues: {
         ':c': courseCode,
