@@ -284,11 +284,11 @@ Resources:
       Policies:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
         - DynamoDBCrudPolicy:
-            TableName: !Ref Courses
+            TableName: !Ref CourseGroups
       Environment:
         Variables:
           # Make table name accessible as environment variable from function code during execution
-          TABLE: !Ref Courses
+          TABLE: !Ref CourseGroups
       Events:
         Api:
           Type: Api

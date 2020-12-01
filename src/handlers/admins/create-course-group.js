@@ -28,7 +28,6 @@ exports.createCourseGroup = async (event) => {
     code,
     capacityDistribution,
     schedule,
-    group,
     classroom,
     students,
     teacherID,
