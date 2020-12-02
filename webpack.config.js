@@ -8,6 +8,7 @@ module.exports = {
   entry: {
     getCourseGroups: './src/handlers/admins/get-course-groups.js',
     getCourses: './src/handlers/admins/get-courses.js',
+    updateRequest: './src/handlers/admins/update-request.js'
   },
   output: {
     filename: '[name]/[name].js',
