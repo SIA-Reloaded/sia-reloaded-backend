@@ -12,8 +12,8 @@ const Utils = require('../../utils');
 // }
 
 exports.putStudentInCourseGroupHandler = async (event) => {
-    if (event.httpMethod !== 'PUT') {
-        throw new Error(`getAllItems only accept PUT method, you tried: ${event.httpMethod}`);
+    if (event.httpMethod !== 'POST') {
+        throw new Error(`getAllItems only accept POST method, you tried: ${event.httpMethod}`);
     }
     const body = JSON.parse(event.body)
 
@@ -47,8 +47,6 @@ exports.putStudentInCourseGroupHandler = async (event) => {
         }
     }
 
-
-    // console.info('params:', params);
 
     const result = await docClient.update(updateCourseParams).promise(courseGroupTableName);
 
