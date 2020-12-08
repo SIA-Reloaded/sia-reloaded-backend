@@ -447,7 +447,7 @@ Resources:
           Type: Api
           Properties:
             Path: /admin/putStudentInCourseGroup
-            Method: PUT          
+            Method: POST          
 #--------------------------------- Users
 
   createUser:
