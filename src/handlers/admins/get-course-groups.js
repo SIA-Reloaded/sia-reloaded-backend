@@ -10,7 +10,7 @@ exports.getCourseGroups = async (event) => {
     throw new Error(`getMethod only accept GET method, you tried: ${event.httpMethod}`);
   }
   console.info(event)
-  console.info("lalalalalalalalal")
+  
   const query = event.queryStringParameters || {};
   const {courseCode = undefined, courseName = undefined } = query
   

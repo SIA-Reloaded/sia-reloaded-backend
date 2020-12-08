@@ -254,12 +254,11 @@ Resources:
       #Environment:
       #  Variables:
       Events:
-        DDBEvent: 
-          Type: DynamoDB
+        Api:
+          Type: Api
           Properties:
-            Stream: 
-              !GetAtt CourseGroups.StreamArn   
-            StartingPosition: TRIM_HORIZON
+            Path: /system/createCalendarEvent
+            Method: GET
 
   updateCalendarEventHandler:
     Type: AWS::Serverless::Function
@@ -272,11 +271,12 @@ Resources:
       #Environment:
       #  Variables:
       Events:
-        Api:
-          Type: Api
+        DDBEvent: 
+          Type: DynamoDB
           Properties:
-            Path: /system/updateCalendarEventHandler
-            Method: GET 
+            Stream: 
+              !GetAtt CourseGroups.StreamArn   
+            StartingPosition: TRIM_HORIZON
 
 # ------------------ Courses functions --------------------------------
 
@@ -321,6 +321,7 @@ Resources:
         Variables:
           # Make table name accessible as environment variable from function code during execution
           TABLE: !Ref CourseGroups
+          COURSE_TABLE: !Ref Courses
           ACADEMIC_CALENDAR: !Ref AcademicCalendar
       Events:
         Api:
@@ -884,3 +885,13 @@ Outputs:
   putStudentInCourseGroupFunctionIamRole:
     Description: "Implicit IAM Role created for putStudentInCourseGroup function"
     Value: !GetAtt putStudentInCourseGroupRole.Arn
+
+  createCalendarEventApi:
+    Description: "API Gateway endpoint URL for Prod stage for createCalendarEvent function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/system/createCalendarEvent"
+  createCalendarEvent:
+    Description: "putStudentInCourseGroup Lambda Function ARN"
+    Value: !GetAtt createCalendarEvent.Arn
+  createCalendarEventFunctionIamRole:
+    Description: "Implicit IAM Role created for createCalendarEvent function"
+    Value: !GetAtt createCalendarEventRole.Arn

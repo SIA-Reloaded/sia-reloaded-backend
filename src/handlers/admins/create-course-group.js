@@ -6,6 +6,7 @@ const docClient = new dynamodb.DocumentClient();
 
 // Get the DynamoDB table name from environment variables
 const tableName = process.env.TABLE;
+const coursesTableName = process.env.COURSE_TABLE;
 const academicCalendarTableName = process.env.ACADEMIC_CALENDAR;
 
 const Utils = require("../../utils");
@@ -30,19 +31,36 @@ exports.createCourseGroup = async (event) => {
     schedule,
     classroom,
     students,
-    teacherID,
+    teacherUsername,
   } = body;
   const academicCalendarItem = await AcademicCalendar.getCurrentAcademicCalendar(
     academicCalendarTableName
   );
+
+  let params;
+  params = {
+    TableName: tableName,
+    FilterExpression: 'code = :c',
+    ExpressionAttributeValues: {
+      ':c': code,
+    }
+  };
+  console.info("params:", params);
+
+  const data = await docClient.scan(params).promise()
+  const items = data.Items;
+  const group = items.length;
+
+
   const academicCalendar = academicCalendarItem.id;
 
   console.log(academicCalendarItem);
   // Creates a new item, or replaces an old item with a new item
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
-  const params = Utils.preparePutItemParams(tableName, {
+  params = Utils.preparePutItemParams(tableName, {
     name,
     code,
+    group,
     capacityDistribution,
     schedule,
     classroom,
@@ -52,6 +70,8 @@ exports.createCourseGroup = async (event) => {
   });
   console.info("params:", params);
   const result = await docClient.put(params).promise(tableName);
+
+
 
   const response = Utils.prepareResponse(result);
   // All log statements are written to CloudWatch

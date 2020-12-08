@@ -4,7 +4,10 @@ const credentials = require('./suia-calendar-key.json')
 const Utils = require('../../../utils');
 
 exports.createCalendarEventHandler = async (event) => {
-  console.log(event)
+  console.info('event: ', event)
+
+  const { sesions, summary, description } = JSON.parse(event.body)
+
   const authCretendials = new google.auth.JWT(credentials.client_email,
     './suia-calendar-key.json',
     credentials.private_key,
@@ -13,11 +16,11 @@ exports.createCalendarEventHandler = async (event) => {
   )
 
   await authCretendials.authorize();
-
+    
   const calendar = google.calendar('v3')
 
   const response = await calendar.events.insert({
-    auth: authCretendials,  
+    auth: authCretendials,
     calendarId: 'c_b8roiuktmnlhc30aaqll756h1s@group.calendar.google.com',
     resource: {
       start: {
@@ -34,6 +37,7 @@ exports.createCalendarEventHandler = async (event) => {
     },
   })
 
+  /*
   const res = await calendar.events.update({
     auth: authCretendials,
     // Calendar identifier. To retrieve calendar IDs call the calendarList.list method. If you want to access the primary calendar of the currently logged in user, use the "primary" keyword.
@@ -93,10 +97,8 @@ exports.createCalendarEventHandler = async (event) => {
       // }
     },
   });
-  
+  */
   const resp = Utils.prepareResponse({ res })
-
-  const resp = Utils.prepareResponse({ response })
 
   return resp;
 }
