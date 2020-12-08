@@ -5,6 +5,7 @@ const Utils = require('../../../utils');
 
 exports.updateCalendarEventHandler = async (event) => {
   console.log(event)
+  /*
   const authCretendials = new google.auth.JWT(credentials.client_email,
     './suia-calendar-key.json',
     credentials.private_key,
@@ -41,6 +42,6 @@ exports.updateCalendarEventHandler = async (event) => {
   });
   
   const resp = Utils.prepareResponse({ res })
-
-  return resp;
+  */
+  return {status: 200};
 }

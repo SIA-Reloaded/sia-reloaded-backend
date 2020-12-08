@@ -30,9 +30,10 @@ exports.createCourseGroup = async (event) => {
     capacityDistribution,
     schedule,
     classroom,
-    students,
-    teacherUsername,
+    studentsUserNames,
+    teachersUsernames,
   } = body;
+
   const academicCalendarItem = await AcademicCalendar.getCurrentAcademicCalendar(
     academicCalendarTableName
   );
@@ -45,16 +46,17 @@ exports.createCourseGroup = async (event) => {
       ':c': code,
     }
   };
-  console.info("params:", params);
+  console.info("serach group params:", params);
 
   const data = await docClient.scan(params).promise()
   const items = data.Items;
   const group = items.length;
 
+  const calentarInsertResponse = await fetch('https://wb1jsep2hj.execute-api.us-east-1.amazonaws.com/Prod/system/createCalendarEvent');
+  console.info('calendar event: ', calentarInsertResponse);
 
   const academicCalendar = academicCalendarItem.id;
-
-  console.log(academicCalendarItem);
+  
   // Creates a new item, or replaces an old item with a new item
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
   params = Utils.preparePutItemParams(tableName, {
@@ -64,11 +66,12 @@ exports.createCourseGroup = async (event) => {
     capacityDistribution,
     schedule,
     classroom,
-    students,
-    teacherID,
+    studentsUserNames,
+    teachersUsernames,
     academicCalendar,
+    googleCalendarEvent: calentarInsertResponse,
   });
-  console.info("params:", params);
+  console.info("create group params:", params);
   const result = await docClient.put(params).promise(tableName);
 
 
