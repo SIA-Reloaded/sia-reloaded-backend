@@ -7,6 +7,7 @@ const docClient = new dynamodb.DocumentClient();
 const Utils = require('../../utils');
 
 // const bodyPutStudentInCourseGroup = {
+//     username: username
 //     requester_id: requester_id,
 //     courseID: courseID
 // }
@@ -29,7 +30,7 @@ exports.putStudentInCourseGroupHandler = async (event) => {
 
     console.info("return from getCourse: ", course)
 
-    course.students.push(body.requester_id)
+    course.studentsUserNames.push(body.username)
 
     console.info("after adding the student: ", course)
 
@@ -40,9 +41,9 @@ exports.putStudentInCourseGroupHandler = async (event) => {
         Key: {
             "id": body.courseID
         },
-        UpdateExpression: "set students = :students, update_datetime = :update_datetime",
+        UpdateExpression: "set studentsUserNames = :studentsUserNames, update_datetime = :update_datetime",
         ExpressionAttributeValues: {
-            ":students": course.students,
+            ":studentsUserNames": course.studentsUserNames,
             ":update_datetime": date.toISOString(),
         }
     }
