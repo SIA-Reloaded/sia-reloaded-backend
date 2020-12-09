@@ -14,26 +14,55 @@ exports.getCoursesHandler = async (event) => {
   const queryParameters = event.queryStringParameters;
 
   const body = [];
+  console.info("evento:", event, " | queryParameters:", queryParameters)
+  // FilterExpression: "contains(#apps, :v)",
+  // ExpressionAttributeNames: { "#apps": "apps" },
+  // ExpressionAttributeValues: { ":v": "MyApp" }
 
-  const params = {
-    TableName: tableName,
-    FilterExpression: "#tchr = :tchrID",
-    ExpressionAttributeNames: {
-      "#tchr": "teacherID"
-    },
-    ExpressionAttributeValues: {
-      ":tchrID": queryParameters.teacherID
-    }
-  };
+  if (queryParameters.username) {
+    const params = {
+      TableName: tableName,
+      FilterExpression: "contains(teachersUsernames, :teachersUsernames)",
+      ExpressionAttributeValues: {
+        ":teachersUsernames": queryParameters.username
+      }
+    };
 
-  const data = await docClient.scan(params).promise();
+    const data = await docClient.scan(params).promise();
 
-  data.Items.forEach(function (item) {
-    body.push(item);
-  });
+    data.Items.forEach(function (item) {
+      body.push(item);
+    });
 
-  const response = Utils.prepareResponse(body);
+    const response = Utils.prepareResponse(body);
 
-  console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
-  return response;
+    console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
+    return response;
+
+  } else {
+
+    const params = {
+      TableName: tableName,
+      FilterExpression: "#tchr = :tchrID",
+      ExpressionAttributeNames: {
+        "#tchr": "teacherID"
+      },
+      ExpressionAttributeValues: {
+        ":tchrID": queryParameters.teacherID
+      }
+    };
+
+    const data = await docClient.scan(params).promise();
+
+    data.Items.forEach(function (item) {
+      body.push(item);
+    });
+
+    const response = Utils.prepareResponse(body);
+
+    console.info(`response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`);
+    return response;
+  }
+
+
 }

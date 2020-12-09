@@ -7,7 +7,7 @@ module.exports = {
   mode: "production",
   entry: {
     getCourseGroups: './src/handlers/admins/get-course-groups.js',
-    getCourses: './src/handlers/admins/get-courses.js',
+    getCourses: './src/handlers/teachers/get-courses.js',
     updateRequest: './src/handlers/admins/update-request.js',
     putStudentInCourseGroup: './src/handlers/admins/put-student-in-course-group.js',
     getRequest: './src/handlers/admins/get-request.js',
