@@ -7,6 +7,7 @@ const docClient = new dynamodb.DocumentClient();
 // Get the DynamoDB table name from environment variables
 const tableName = process.env.TABLE;
 const coursesTableName = process.env.COURSE_TABLE;
+const fetch = require('node-fetch').default;
 const academicCalendarTableName = process.env.ACADEMIC_CALENDAR;
 
 const Utils = require("../../utils");
@@ -38,6 +39,8 @@ exports.createCourseGroup = async (event) => {
     academicCalendarTableName
   );
 
+  const academicCalendar = academicCalendarItem.id;
+
   let params;
   params = {
     TableName: tableName,
@@ -46,16 +49,33 @@ exports.createCourseGroup = async (event) => {
       ':c': code,
     }
   };
-  console.info("serach group params:", params);
-
+  console.info("search group params:", params);
+  
   const data = await docClient.scan(params).promise()
   const items = data.Items;
   const group = items.length;
-
-  const calentarInsertResponse = await fetch('https://wb1jsep2hj.execute-api.us-east-1.amazonaws.com/Prod/system/createCalendarEvent');
-  console.info('calendar event: ', calentarInsertResponse);
-
-  const academicCalendar = academicCalendarItem.id;
+  
+  const courseGroupData = {
+    name,
+    code,
+    group,
+    capacityDistribution,
+    schedule,
+    classroom,
+    studentsUserNames,
+    teachersUsernames,
+    academicCalendar,
+  }
+  
+  const calentarInsertResponse = await fetch('https://wb1jsep2hj.execute-api.us-east-1.amazonaws.com/Prod/system/createCalendarEvent', {
+    method: 'POST',
+    body: JSON.stringify(courseGroupData),
+    headers: { 'Content-Type': 'application/json' }
+  },
+  )
+  
+  const calendarEventData = await calentarInsertResponse.json()
+  console.info('calendar event: ', calendarEventData);
   
   // Creates a new item, or replaces an old item with a new item
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
@@ -69,10 +89,10 @@ exports.createCourseGroup = async (event) => {
     studentsUserNames,
     teachersUsernames,
     academicCalendar,
-    googleCalendarEvent: calentarInsertResponse,
+    googleCalendarEvent: calendarEventData,
   });
   console.info("create group params:", params);
-  const result = await docClient.put(params).promise(tableName);
+  const result = await docClient.put(params).promise();
 
 
 

@@ -8,6 +8,7 @@
     "dotenv": "^8.2.0",
     "googleapis": "^62.0.0",
     "lodash": "^4.17.20",
+    "node-fetch": "^2.6.1",
     "uuid": "^8.3.1"
   },
   "devDependencies": {

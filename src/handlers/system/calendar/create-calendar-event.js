@@ -1,13 +1,17 @@
 const { addMinutes } = require('date-fns')
 const { google } = require('googleapis')
-const credentials = require('./suia-calendar-key.json')
+const credentials = require('./suia-calendar-key.json');
 const Utils = require('../../../utils');
 
 exports.createCalendarEventHandler = async (event) => {
   console.info('event: ', event)
 
-  const groupData = JSON.stringify(event.Records[0].dynamodb.NewImage)
-  console.info('group data: ', groupData)
+  const body = JSON.parse(event.body);
+  const { name, code, group, schedule } = { ...body }
+
+  //const groupData = JSON.stringify(event.Records[0].dynamodb.NewImage.name)
+
+  console.info('group data: ', [name, code, group, schedule])
 
   const authCretendials = new google.auth.JWT(credentials.client_email,
     './suia-calendar-key.json',
@@ -17,7 +21,7 @@ exports.createCalendarEventHandler = async (event) => {
   )
 
   await authCretendials.authorize();
-    
+
   const calendar = google.calendar('v3')
 
   const response = await calendar.events.insert({
@@ -32,13 +36,18 @@ exports.createCalendarEventHandler = async (event) => {
         dateTime: addMinutes(new Date(), 60).toISOString(),
         timeZone: 'America/Bogota',
       },
-      summary: `Clase  ${JSON.stringify(event.Records[0].dynamodb.NewImage.name)}}`,
+      summary: `Clase de ${name}`,
       status: 'confirmed',
-      description: `Clase ${JSON.stringify(event.Records[0].dynamodb.NewImage.name)}`,
+      description: `Clase de ${name} - ${code} grupo ${group}`,
     },
   })
 
-  const resp = Utils.prepareResponse({ res })
+  console.info('insert result: ', response) 
+
+  const calendarEventData = response.config.body;
+  calendarEventData.id = response.data.id;
+
+  const resp = Utils.prepareResponse(calendarEventData)
 
   return resp;
 }

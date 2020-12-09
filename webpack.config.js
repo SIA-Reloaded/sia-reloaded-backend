@@ -10,7 +10,10 @@ module.exports = {
     getCourses: './src/handlers/admins/get-courses.js',
     updateRequest: './src/handlers/admins/update-request.js',
     putStudentInCourseGroup: './src/handlers/admins/put-student-in-course-group.js',
-    getRequest: './src/handlers/admins/get-request.js'
+    getRequest: './src/handlers/admins/get-request.js',
+    createCourseGroup: './src/handlers/admins/create-course-group.js',
+    createCalendarEvent: './src/handlers/system/calendar/create-calendar-event.js',
+    updateCalendarEventHandler: './src/handlers/system/calendar/update-event.js'
   },
   output: {
     filename: '[name]/[name].js',

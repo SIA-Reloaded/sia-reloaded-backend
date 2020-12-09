@@ -49,7 +49,7 @@ async function compileFunctions(functions) {
   config.entry = pick(config.entry, entryPoints);
   // Alert if there is a function for which we are missing an entrypoint
   const missing = difference(keys(config.entry), entryPoints);
-  if (missing.length > 0) throw new Error(`Could not find entrypoints ${missing.join(',')} in ${WEBPACK_CONFIG}`);  
+  if (missing.length > 0) throw new Error(`Could not find entrypoints ${missing.join(',')} in ${WEBPACK_CONFIG}`);
   console.error(`Compiling entrypoint(s):\n${entryPoints.map(e => `- ${e}`).join('\n')}`);
   // Setup compiler
   // We add a hook to zip assets after compiling, so we upload them to lambda
@@ -117,7 +117,7 @@ async function main() {
   if (functions.length === 0) return;
 
   await compileFunctions(functions);
-  await deployFunctions(functions);
+  //await deployFunctions(functions);
 }
 
 

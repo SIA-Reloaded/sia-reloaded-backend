@@ -258,7 +258,7 @@ Resources:
           Type: Api
           Properties:
             Path: /system/createCalendarEvent
-            Method: GET
+            Method: POST
 
   updateCalendarEventHandler:
     Type: AWS::Serverless::Function
