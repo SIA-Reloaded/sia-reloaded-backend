@@ -44,8 +44,12 @@ exports.createCalendarEventHandler = async (event) => {
 
   console.info('insert result: ', response) 
 
-  const calendarEventData = response.config.body;
-  calendarEventData.id = response.data.id;
+  const eventData = await JSON.parse(response.config.body)
+
+  let calendarEventData = {...eventData , id: response.data.id};
+
+  console.info('insert calendarEventData: ', calendarEventData) 
+  console.info('insert response.data.id: ', response.data.id) 
 
   const resp = Utils.prepareResponse(calendarEventData)
 

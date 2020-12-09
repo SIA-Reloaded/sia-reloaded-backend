@@ -116,8 +116,8 @@ async function main() {
   const functions = loadFunctions(fname);
   if (functions.length === 0) return;
 
-  await compileFunctions(functions);
-  //await deployFunctions(functions);
+  //await compileFunctions(functions);
+  await deployFunctions(functions);
 }
 
 

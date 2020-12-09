@@ -276,7 +276,7 @@ Resources:
           Properties:
             Stream: 
               !GetAtt CourseGroups.StreamArn   
-            StartingPosition: TRIM_HORIZON
+            StartingPosition: LATEST
 
 # ------------------ Courses functions --------------------------------
 

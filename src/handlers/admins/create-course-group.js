@@ -74,8 +74,10 @@ exports.createCourseGroup = async (event) => {
   },
   )
   
-  const calendarEventData = await calentarInsertResponse.json()
-  console.info('calendar event: ', calendarEventData);
+  const googleCalendarEvent = await calentarInsertResponse.json();
+  console.info('calendar event: ', googleCalendarEvent);
+
+  const googleCalendarEventId = googleCalendarEvent.id;
   
   // Creates a new item, or replaces an old item with a new item
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
@@ -89,8 +91,9 @@ exports.createCourseGroup = async (event) => {
     studentsUserNames,
     teachersUsernames,
     academicCalendar,
-    googleCalendarEvent: calendarEventData,
+    googleCalendarEventId,
   });
+
   console.info("create group params:", params);
   const result = await docClient.put(params).promise();
 

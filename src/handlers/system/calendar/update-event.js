@@ -1,12 +1,16 @@
 const { google } = require('googleapis')
 const credentials = require('./suia-calendar-key.json')
 const Utils = require('../../../utils');
-const { parseJSON } = require('date-fns');
 const AWS = require("aws-sdk");
 
 exports.updateCalendarEventHandler = async (event) => {
   console.info('event: ', event)
   const groupData = AWS.DynamoDB.Converter.unmarshall(event.Records[0].dynamodb.NewImage)
+  
+  event.Records.forEach((record) => {
+    console.log('record: ',  AWS.DynamoDB.Converter.unmarshall(record.dynamodb.NewImage))
+  })
+
   console.info("data: ", groupData)
   console.info("schedule: ", groupData.schedule)
 
@@ -62,7 +66,7 @@ exports.updateCalendarEventHandler = async (event) => {
     calendarId: 'c_b8roiuktmnlhc30aaqll756h1s@group.calendar.google.com',
     // Event identifier.
     sendUpdates: 'all',
-    eventId: groupData.calendarEventData.id,
+    eventId: groupData.googleCalendarEventId,
     requestBody: {
       attendees,
       start: {
