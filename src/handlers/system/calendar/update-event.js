@@ -60,32 +60,28 @@ exports.updateCalendarEventHandler = async (event) => {
   await authCretendials.authorize();
 
   const calendar = google.calendar('v3')
-  const res = await calendar.events.patch({
-    auth: authCretendials,
-    // Calendar identifier. To retrieve calendar IDs call the calendarList.list method. If you want to access the primary calendar of the currently infoged in user, use the "primary" keyword.
-    calendarId: 'c_b8roiuktmnlhc30aaqll756h1s@group.calendar.google.com',
-    // Event identifier.
-    sendUpdates: 'all',
-    eventId: groupData.googleCalendarEventId,
-    requestBody: {
-      attendees,
-      start: {
-        dateTime: startDate.toISOString(),
-        timeZone: 'America/Bogota',
-      },
-      end: {
-        dateTime: endDate.toISOString(),
-        timeZone: 'America/Bogota',
-      },
-    },
-    recurrence: [repeatEventString],
-  });
-
-
-
-  console.info('calendar patch: ', res.body);
   
-  const resp = Utils.prepareResponse(res.body)
+  if(groupData.googleCalendarEventId) {
+    const res = await calendar.events.update({
+      auth: authCretendials,
+      // Calendar identifier. To retrieve calendar IDs call the calendarList.list method. If you want to access the primary calendar of the currently infoged in user, use the "primary" keyword.
+      calendarId: 'c_b8roiuktmnlhc30aaqll756h1s@group.calendar.google.com',
+      // Event identifier.
+      sendUpdates: 'all',
+      eventId: groupData.googleCalendarEventId,
+      requestBody: {
+        attendees,
+      },
+    });
+    
+    console.info('calendar patch: ', res.body);
+    const resp = Utils.prepareResponse(res.body)
+    return resp;
+  } else {
+    const resp = Utils.prepareResponse({message: 'error'})
+    return resp;
+  }
 
-  return resp;
+  
+
 }
