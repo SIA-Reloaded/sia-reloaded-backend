@@ -6,7 +6,7 @@ const docClient = new dynamodb.DocumentClient();
 
 // Get the DynamoDB table name from environment variables
 const tableName = process.env.TABLE;
-const coursesTableName = process.env.COURSE_TABLE;
+const userTableName = process.env.USER_TABLE;
 const fetch = require('node-fetch').default;
 const academicCalendarTableName = process.env.ACADEMIC_CALENDAR;
 
@@ -50,11 +50,11 @@ exports.createCourseGroup = async (event) => {
     }
   };
   console.info("search group params:", params);
-  
+
   const data = await docClient.scan(params).promise()
   const items = data.Items;
   const group = items.length;
-  
+
   const courseGroupData = {
     name,
     code,
@@ -66,19 +66,19 @@ exports.createCourseGroup = async (event) => {
     teachersUsernames,
     academicCalendar,
   }
-  
+
   const calentarInsertResponse = await fetch('https://wb1jsep2hj.execute-api.us-east-1.amazonaws.com/Prod/system/createCalendarEvent', {
     method: 'POST',
     body: JSON.stringify(courseGroupData),
     headers: { 'Content-Type': 'application/json' }
   },
   )
-  
+
   const googleCalendarEvent = await calentarInsertResponse.json();
   console.info('calendar event: ', googleCalendarEvent);
 
   const googleCalendarEventId = googleCalendarEvent.id;
-  
+
   // Creates a new item, or replaces an old item with a new item
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#put-property
   params = Utils.preparePutItemParams(tableName, {
@@ -94,12 +94,42 @@ exports.createCourseGroup = async (event) => {
     googleCalendarEventId,
   });
 
-  console.info("create group params:", params);
-  const result = await docClient.put(params).promise();
+  await docClient.put(params).promise().then();
 
+  // const updateUserData = async (participant) => {
+  //   const participantResponse = await fetch(`https://wb1jsep2hj.execute-api.us-east-1.amazonaws.com/Prod/system/getUserData/${participant}`)
+  //   const participantAux = await participantResponse.json();
+  //   const participantData = participantAux[0]
+  //   console.log('participantData', participantData)
+  //   const courses = participantData.current_courses
+  //   console.log('courses', courses)
+  //   const date = new Date();
+  //   const participanParams = {
+  //     TableName: userTableName,
+  //     Key: {
+  //       "id": participantData.id
+  //     },
+  //     UpdateExpression: "set current_courses = :current_courses, update_datetime = :update_datetime",
+  //     ExpressionAttributeValues: {
+  //       ":current_courses": [...courses, params.id],
+  //       ":update_datetime": date.toISOString(),
+  //     }
+  //   }
 
+  //   console.info('params:', participanParams);
 
-  const response = Utils.prepareResponse(result);
+  //   await docClient.update(participanParams).promise();
+  // }
+
+  // const participants = [...studentsUserNames, ...teachersUsernames]
+
+  // console.log('participants: ', participants)
+
+  // for (let i = 0; i < participants.length; i++) {
+  //   await updateUserData(participants[i]);
+  // }
+
+  const response = Utils.prepareResponse('');
   // All log statements are written to CloudWatch
   console.info(
     `response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`

@@ -317,12 +317,15 @@ Resources:
             TableName: !Ref CourseGroups
         - DynamoDBCrudPolicy:
             TableName: !Ref AcademicCalendar
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Users
       Environment:
         Variables:
           # Make table name accessible as environment variable from function code during execution
           TABLE: !Ref CourseGroups
           COURSE_TABLE: !Ref Courses
           ACADEMIC_CALENDAR: !Ref AcademicCalendar
+          USER_TABLE: !Ref Users
       Events:
         Api:
           Type: Api

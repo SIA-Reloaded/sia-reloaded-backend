@@ -3,6 +3,16 @@ const { google } = require('googleapis')
 const credentials = require('./suia-calendar-key.json');
 const Utils = require('../../../utils');
 
+const DayToNumber = {
+  MO: 14,
+  TU: 15,
+  WE: 16,
+  TH: 17,
+  FR: 18,
+  SA: 19,
+  SU: 20,
+}
+
 exports.createCalendarEventHandler = async (event) => {
   console.info('event: ', event)
 
@@ -19,15 +29,15 @@ exports.createCalendarEventHandler = async (event) => {
 
   console.info('days: ', days)
 
-  const repeatEventString = `RRULE:FREQ=WEEKLY;COUNT=16;WKST=MO;BYDAY=${days}`
+  const repeatEventString = `RRULE:FREQ=WEEKLY;COUNT=16;BYDAY=${days}`
 
   console.info('repeatEventString: ', repeatEventString)
 
   const startHours = parseInt(schedule[0].startHours.split(':')[0])
   const endHours = parseInt(schedule[0].endHours.split(':')[0])
 
-  const startDate = new Date(2020, 11, 14, startHours, 0, 0)
-  const endDate = new Date(2020, 11, 14, endHours, 0, 0)
+  const startDate = new Date(2020, 11, DayToNumber[schedule[0].day], startHours, 0, 0)
+  const endDate = new Date(2020, 11, DayToNumber[schedule[0].day], endHours, 0, 0)
 
   console.info('startDate: ', startDate)
   console.info('endDate: ', endDate)
